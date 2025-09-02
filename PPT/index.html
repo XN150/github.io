@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Q版泡泡堂 - 经典休闲游戏</title>
+    <title>Bubble Tank - Q版泡泡堂7</title>
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <style>
         * {
@@ -13,9 +13,9 @@
         }
         
         body {
-            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #70c1ff, #ff9ee0, #a18cd3);
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #4a235a);
+            color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -30,19 +30,19 @@
             padding: 20px;
             width: 100%;
             max-width: 1000px;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         h1 {
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
-            color: #ff5a87;
-            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-            letter-spacing: 1px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+            letter-spacing: 2px;
         }
         
         .subtitle {
@@ -50,7 +50,6 @@
             opacity: 0.8;
             max-width: 700px;
             margin: 0 auto 20px;
-            color: #666;
         }
         
         .controls {
@@ -62,7 +61,7 @@
         }
         
         .btn {
-            background: linear-gradient(to right, #ff8aae, #ff5a87);
+            background: linear-gradient(to right, #ff8c00, #ff6600);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -71,12 +70,12 @@
             font-size: 1rem;
             font-weight: bold;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 90, 135, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
         }
         
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 90, 135, 0.5);
+            box-shadow: 0 8px 20px rgba(255, 102, 0, 0.5);
         }
         
         .btn:active {
@@ -84,15 +83,15 @@
         }
         
         .btn.secondary {
-            background: linear-gradient(to right, #7bc8ff, #4a9eff);
-            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.3);
+            background: linear-gradient(to right, #3498db, #2980b9);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
         
         .size-controls {
             display: flex;
             gap: 10px;
             align-items: center;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.3);
             padding: 12px 20px;
             border-radius: 50px;
             margin-top: 15px;
@@ -102,24 +101,22 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.7);
-            color: #ff5a87;
-            border: 1px solid rgba(255, 90, 135, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-weight: bold;
         }
         
         .size-btn:hover {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.2);
         }
         
         .size-display {
             min-width: 100px;
             text-align: center;
             font-weight: bold;
-            color: #666;
         }
         
         #game-wrapper {
@@ -136,11 +133,11 @@
             height: 0;
             padding-bottom: 75%; /* 4:3 宽高比 (720/960=0.75) */
             position: relative;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             transition: all 0.4s ease;
         }
         
@@ -164,20 +161,18 @@
         }
         
         .instructions {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.4);
             padding: 20px;
             border-radius: 15px;
             margin-top: 25px;
             width: 100%;
             max-width: 1000px;
-            color: #555;
         }
         
         .instructions h2 {
-            color: #4a9eff;
+            color: #00ccff;
             margin-bottom: 15px;
             text-align: center;
-            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
         }
         
         .instructions ul {
@@ -190,30 +185,7 @@
         }
         
         .instructions strong {
-            color: #ff5a87;
-        }
-        
-        .character-showcase {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .character {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            width: 140px;
-        }
-        
-        .character img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            margin-bottom: 10px;
+            color: #ffcc00;
         }
         
         footer {
@@ -222,12 +194,48 @@
             text-align: center;
             opacity: 0.7;
             font-size: 0.9rem;
-            color: #666;
+        }
+        
+        .performance-panel {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .performance-metric {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: #00ff99;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #00ff99, #00ccff);
+            transition: width 0.5s ease;
         }
         
         @media (max-width: 768px) {
             h1 {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
             
             .subtitle {
@@ -244,15 +252,15 @@
                 max-width: 300px;
             }
             
-            .character-showcase {
+            .performance-panel {
                 flex-direction: column;
-                align-items: center;
+                gap: 8px;
             }
         }
         
         @media (max-width: 480px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .size-controls {
@@ -264,8 +272,8 @@
 </head>
 <body>
     <header>
-        <h1>Q版泡泡堂</h1>
-        <p class="subtitle">调整下方控制按钮改变游戏窗口大小，体验经典泡泡堂乐趣！</p>
+        <h1>Bubble Tank</h1>
+        <p class="subtitle">调整下方控制按钮改变游戏窗口大小</p>
         
         <div class="controls">
             <button id="fullscreen-btn" class="btn">全屏模式</button>
@@ -288,35 +296,16 @@
     <div class="instructions">
         <h2>游戏说明</h2>
         <ul>
-            <li>使用<strong>方向键</strong>控制角色移动</li>
-            <li>按<strong>空格键</strong>放置泡泡</li>
-            <li>收集各种道具增强能力：<strong>加速鞋</strong>、<strong>增加泡泡</strong>、<strong>火力增强</strong>等</li>
-            <li>炸开障碍物寻找隐藏道具</li>
-            <li>击败所有敌人并到达出口通关</li>
-            <li>注意避开自己放置的泡泡爆炸范围</li>
+            <li>Bubble Tank（Q版泡泡堂7）是一款经典的泡泡射击类小游戏。</li>
+            <li>你将控制泡泡坦克，在泡泡世界中消灭敌人，收集气泡并不断升级。</li>
+            <li>使用<strong>方向键</strong>移动，<strong>鼠标点击</strong>射击。</li>
+            <li>收集更多气泡可以让你的坦克变得更强大。</li>
+            <li>注意躲避敌人的攻击，挑战更高分数！</li>
         </ul>
-        
-        <div class="character-showcase">
-            <div class="character">
-                <div style="width:80px;height:80px;background:#ff9ee0;border-radius:50%;margin:0 auto;display:flex;justify-content:center;align-items:center;font-size:40px;">🐰</div>
-                <h3>粉泡泡</h3>
-                <p>移动速度较快</p>
-            </div>
-            <div class="character">
-                <div style="width:80px;height:80px;background:#7bc8ff;border-radius:50%;margin:0 auto;display:flex;justify-content:center;align-items:center;font-size:40px;">🐻</div>
-                <h3>蓝泡泡</h3>
-                <p>泡泡威力较大</p>
-            </div>
-            <div class="character">
-                <div style="width:80px;height:80px;background:#ffcc00;border-radius:50%;margin:0 auto;display:flex;justify-content:center;align-items:center;font-size:40px;">🐥</div>
-                <h3>黄泡泡</h3>
-                <p>可放置更多泡泡</p>
-            </div>
-        </div>
     </div>
     
     <footer>
-        <p>美汁汁 | Q版泡泡堂 - 经典休闲游戏</p>
+        <p>Bubble Tank | Q版泡泡堂7 中文版</p>
     </footer>
 
     <script>
@@ -391,7 +380,7 @@
             const player = ruffle.createPlayer();
             container.appendChild(player);
             
-            // 加载游戏SWF文件 - 修改为泡泡堂的游戏文件
+            // 加载游戏SWF文件
             player.load("bubble-tank.swf").then(() => {
                 console.log("游戏加载成功");
             }).catch((e) => {
@@ -399,15 +388,14 @@
                 container.innerHTML = `
                     <div style="position:absolute; top:0; left:0; width:100%; height:100%; 
                                 display:flex; flex-direction:column; justify-content:center; 
-                                align-items:center; background:rgba(255,255,255,0.9); color:#333; 
-                                padding:20px; text-align:center; border-radius:10px;">
-                        <h2 style="color:#ff5a87; margin-bottom:20px;">游戏加载失败</h2>
+                                align-items:center; background:rgba(0,0,0,0.8); color:white; 
+                                padding:20px; text-align:center;">
+                        <h2 style="color:#ff5555; margin-bottom:20px;">游戏加载失败</h2>
                         <p>无法加载游戏文件 bubble-tank.swf</p>
                         <p style="margin-top:10px; font-size:0.9em; opacity:0.7;">${e.message}</p>
                         <button onclick="window.location.reload()" 
-                                style="margin-top:25px; padding:10px 25px; background:#ff5a87; 
-                                       border:none; border-radius:50px; color:white; cursor:pointer;
-                                       font-weight:bold; box-shadow:0 5px 15px rgba(255,90,135,0.3);">
+                                style="margin-top:25px; padding:10px 25px; background:#ff6600; 
+                                       border:none; border-radius:5px; color:white; cursor:pointer;">
                             重新加载
                         </button>
                     </div>
