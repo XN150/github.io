@@ -278,12 +278,32 @@
         <div class="controls">
             <button id="fullscreen-btn" class="btn">全屏模式</button>
             <button id="reset-btn" class="btn secondary">重置尺寸</button>
+            <button id="perf-btn" class="btn secondary">性能面板</button>
         </div>
         
         <div class="size-controls">
             <button id="size-down" class="size-btn">-</button>
             <div class="size-display">100%</div>
             <button id="size-up" class="size-btn">+</button>
+        </div>
+        
+        <div class="loading-bar">
+            <div class="loading-progress" id="loading-progress"></div>
+        </div>
+        
+        <div class="performance-panel" id="performance-panel" style="display: none;">
+            <div class="performance-metric">
+                <span>FPS: </span>
+                <span class="metric-value" id="fps-counter">0</span>
+            </div>
+            <div class="performance-metric">
+                <span>内存: </span>
+                <span class="metric-value" id="memory-usage">0 MB</span>
+            </div>
+            <div class="performance-metric">
+                <span>加载: </span>
+                <span class="metric-value" id="load-status">等待中...</span>
+            </div>
         </div>
     </header>
     
@@ -294,13 +314,14 @@
     </div>
     
     <div class="instructions">
-        <h2>游戏说明</h2>
+        <h2>游戏说明 & 性能优化提示</h2>
         <ul>
             <li>Bubble Tank（Q版泡泡堂7）是一款经典的泡泡射击类小游戏。</li>
             <li>你将控制泡泡坦克，在泡泡世界中消灭敌人，收集气泡并不断升级。</li>
-            <li>使用<strong>方向键</strong>移动，<strong>鼠标点击</strong>射击。</li>
+            <li>使用<strong>方向键</strong>或<strong>WASD</strong>移动，<strong>鼠标点击</strong>射击。</li>
             <li>收集更多气泡可以让你的坦克变得更强大。</li>
             <li>注意躲避敌人的攻击，挑战更高分数！</li>
+            <li><strong>性能提示</strong>: 如果游戏卡顿，尝试关闭其他标签页，降低游戏画质或减少同时运行的程序。</li>
         </ul>
     </div>
     
@@ -317,6 +338,18 @@
             const sizeUpBtn = document.getElementById('size-up');
             const resetBtn = document.getElementById('reset-btn');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
+            const perfBtn = document.getElementById('perf-btn');
+            const perfPanel = document.getElementById('performance-panel');
+            const fpsCounter = document.getElementById('fps-counter');
+            const memoryUsage = document.getElementById('memory-usage');
+            const loadStatus = document.getElementById('load-status');
+            const loadingProgress = document.getElementById('loading-progress');
+            
+            // 性能监控变量
+            let fps = 0;
+            let frameCount = 0;
+            let lastTime = performance.now();
+            let perfMonitorInterval;
             
             // 初始尺寸设置
             let scale = 1;
@@ -365,6 +398,13 @@
                 }
             });
             
+            // 性能面板切换
+            perfBtn.addEventListener('click', () => {
+                const isVisible = perfPanel.style.display !== 'none';
+                perfPanel.style.display = isVisible ? 'none' : 'flex';
+                perfBtn.textContent = isVisible ? '性能面板' : '隐藏面板';
+            });
+            
             // 退出全屏
             function exitFullscreen() {
                 container.classList.remove('fullscreen');
@@ -374,24 +414,96 @@
             // 初始化显示
             updateSizeDisplay();
             
+            // 性能监控函数
+            function startPerformanceMonitoring() {
+                // FPS计算
+                function updateFPS() {
+                    const now = performance.now();
+                    frameCount++;
+                    
+                    if (now >= lastTime + 1000) {
+                        fps = Math.round((frameCount * 1000) / (now - lastTime));
+                        fpsCounter.textContent = fps;
+                        frameCount = 0;
+                        lastTime = now;
+                        
+                        // 低FPS警告
+                        if (fps < 25) {
+                            fpsCounter.style.color = '#ff5555';
+                        } else if (fps < 45) {
+                            fpsCounter.style.color = '#ffcc00';
+                        } else {
+                            fpsCounter.style.color = '#00ff99';
+                        }
+                    }
+                    requestAnimationFrame(updateFPS);
+                }
+                
+                // 内存使用估算（非精确值）
+                function updateMemoryUsage() {
+                    if (performance.memory) {
+                        const usedMB = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                        memoryUsage.textContent = `${usedMB} MB`;
+                        if (usedMB > 500) {
+                            memoryUsage.style.color = '#ff5555';
+                        } else if (usedMB > 300) {
+                            memoryUsage.style.color = '#ffcc00';
+                        } else {
+                            memoryUsage.style.color = '#00ff99';
+                        }
+                    } else {
+                        memoryUsage.textContent = 'N/A';
+                    }
+                }
+                
+                updateFPS();
+                setInterval(updateMemoryUsage, 2000);
+            }
+            
             // 加载Ruffle播放器
             window.RufflePlayer = window.RufflePlayer || {};
             const ruffle = window.RufflePlayer.newest();
             const player = ruffle.createPlayer();
             container.appendChild(player);
             
+            // 模拟加载进度
+            let loadProgress = 0;
+            const loadInterval = setInterval(() => {
+                loadProgress += Math.random() * 10;
+                if (loadProgress > 90) clearInterval(loadInterval);
+                loadingProgress.style.width = `${loadProgress}%`;
+            }, 300);
+            
             // 加载游戏SWF文件
-            player.load("bubble-tank.swf").then(() => {
+            player.load("bubble-tkank.swf").then(() => {
                 console.log("游戏加载成功");
+                loadingProgress.style.width = '100%';
+                loadStatus.textContent = '加载完成';
+                loadStatus.style.color = '#00ff99';
+                
+                // 开始性能监控
+                startPerformanceMonitoring();
+                
+                // 游戏加载完成后显示性能提示
+                setTimeout(() => {
+                    perfPanel.style.display = 'flex';
+                    perfBtn.textContent = '隐藏面板';
+                }, 3000);
             }).catch((e) => {
                 console.error("游戏加载失败:", e);
+                clearInterval(loadInterval);
+                loadingProgress.style.width = '100%';
+                loadingProgress.style.background = '#ff5555';
+                loadStatus.textContent = '加载失败';
+                loadStatus.style.color = '#ff5555';
+                
                 container.innerHTML = `
                     <div style="position:absolute; top:0; left:0; width:100%; height:100%; 
                                 display:flex; flex-direction:column; justify-content:center; 
                                 align-items:center; background:rgba(0,0,0,0.8); color:white; 
                                 padding:20px; text-align:center;">
                         <h2 style="color:#ff5555; margin-bottom:20px;">游戏加载失败</h2>
-                        <p>无法加载游戏文件 bubble-tank.swf</p>
+                        <p>无法加载游戏文件 bubble-tkank.swf</p>
                         <p style="margin-top:10px; font-size:0.9em; opacity:0.7;">${e.message}</p>
                         <button onclick="window.location.reload()" 
                                 style="margin-top:25px; padding:10px 25px; background:#ff6600; 
