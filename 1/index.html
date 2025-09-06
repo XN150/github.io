@@ -129,6 +129,34 @@
             animation: pulse 1.5s infinite;
         }
         
+        /* 数字键盘样式 */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .numpad button {
+            padding: 15px 0;
+            font-size: 20px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+        
+        .numpad button:active {
+            transform: scale(0.95);
+        }
+        
+        .numpad .backspace {
+            grid-column: span 2;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+        
+        .numpad .enter {
+            grid-column: span 2;
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
@@ -146,6 +174,15 @@
             
             .range-display {
                 font-size: 20px;
+            }
+            
+            .numpad {
+                gap: 8px;
+            }
+            
+            .numpad button {
+                padding: 12px 0;
+                font-size: 18px;
             }
         }
     </style>
@@ -170,7 +207,24 @@
             </div>
             
             <div class="input-area">
-                <input type="number" id="guessInput" min="1" max="100" placeholder="请输入1-100之间的数字">
+                <input type="number" id="guessInput" min="1" max="100" placeholder="请输入1-100之间的数字" readonly>
+                
+                <!-- 数字键盘 -->
+                <div class="numpad">
+                    <button data-value="1">1</button>
+                    <button data-value="2">2</button>
+                    <button data-value="3">3</button>
+                    <button data-value="4">4</button>
+                    <button data-value="5">5</button>
+                    <button data-value="6">6</button>
+                    <button data-value="7">7</button>
+                    <button data-value="8">8</button>
+                    <button data-value="9">9</button>
+                    <button data-value="0">0</button>
+                    <button class="backspace">⌫</button>
+                    <button class="enter">确认</button>
+                </div>
+                
                 <button id="guessBtn">猜数字</button>
                 <button id="restartBtn" style="display:none;">重新开始</button>
             </div>
@@ -200,6 +254,7 @@
             const restartBtn = document.getElementById('restartBtn');
             const result = document.getElementById('result');
             const history = document.getElementById('history');
+            const numpadButtons = document.querySelectorAll('.numpad button');
             
             // 更新范围显示
             function updateRangeDisplay() {
@@ -256,7 +311,6 @@
                 }
                 
                 guessInput.value = '';
-                guessInput.focus();
             }
             
             // 重新开始游戏
@@ -283,16 +337,35 @@
                 addHistory("新游戏开始");
             }
             
+            // 数字键盘处理
+            numpadButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (gameOver) return;
+                    
+                    const action = this.classList.contains('backspace') ? 'backspace' : 
+                                  this.classList.contains('enter') ? 'enter' : 'number';
+                    
+                    switch(action) {
+                        case 'number':
+                            const value = this.getAttribute('data-value');
+                            // 确保输入不会超过3位数
+                            if (guessInput.value.length < 3) {
+                                guessInput.value += value;
+                            }
+                            break;
+                        case 'backspace':
+                            guessInput.value = guessInput.value.slice(0, -1);
+                            break;
+                        case 'enter':
+                            handleGuess();
+                            break;
+                    }
+                });
+            });
+            
             // 事件监听
             guessBtn.addEventListener('click', handleGuess);
-            
             restartBtn.addEventListener('click', restartGame);
-            
-            guessInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    handleGuess();
-                }
-            });
             
             // 初始化
             updateRangeDisplay();
