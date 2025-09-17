@@ -117,4 +117,70 @@
                     frameCount = 0;
                     lastTime = now;
                     if (fps < 25) fpsCounter.style.color = '#ff5555';
-                    else if (fps < 45) fpsCounter.style.color = '#f
+                    else if (fps < 45) fpsCounter.style.color = '#ffcc00';
+                    else fpsCounter.style.color = '#00ff99';
+                }
+                requestAnimationFrame(updateFPS);
+            }
+            function updateMemoryUsage() {
+                if (performance && performance.memory) {
+                    const usedMB = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                    memoryUsage.textContent = `${usedMB} MB`;
+                    if (usedMB > 500) memoryUsage.style.color = '#ff5555';
+                    else if (usedMB > 300) memoryUsage.style.color = '#ffcc00';
+                    else memoryUsage.style.color = '#00ff99';
+                } else {
+                    memoryUsage.textContent = 'N/A';
+                }
+            }
+            updateFPS();
+            setInterval(updateMemoryUsage, 2000);
+        }
+        // 创建并加载 Ruffle 播放器
+        const ruffle = window.RufflePlayer.newest();
+        const player = ruffle.createPlayer();
+        // 双保险：设置属性（不同版本命名可能不同）
+        player.setAttribute('preferred_renderer', 'webgl');
+        player.setAttribute('preferredrenderer', 'webgl');
+        player.setAttribute('quality', 'low');
+        player.setAttribute('letterbox', 'fullscreen');
+        container.appendChild(player);
+        // 模拟加载进度（仅 UI）
+        let loadProgress = 0;
+        const loadInterval = setInterval(() => {
+            loadProgress += Math.random() * 10;
+            if (loadProgress >= 90) clearInterval(loadInterval);
+            loadingProgress.style.width = `${Math.min(loadProgress, 90)}%`;
+        }, 250);
+        player.load('bubble-tank.swf').then(() => {
+            loadingProgress.style.width = '100%';
+            loadStatus.textContent = '加载完成';
+            loadStatus.style.color = '#00ff99';
+            // 启动性能监控
+            startPerformanceMonitoring();
+            // 默认展开性能面板几秒后由你决定是否关闭
+            setTimeout(() => {
+                perfPanel.style.display = 'flex';
+                perfBtn.textContent = '隐藏面板';
+            }, 800);
+        }).catch((e) => {
+            console.error('游戏加载失败:', e);
+            clearInterval(loadInterval);
+            loadingProgress.style.width = '100%';
+            loadingProgress.style.background = '#ff5555';
+            loadStatus.textContent = '加载失败';
+            loadStatus.style.color = '#ff5555';
+            container.innerHTML = `
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(0,0,0,0.8);color:#fff;padding:20px;text-align:center;">
+                    <h2 style="color:#ff5555;margin-bottom:18px;">游戏加载失败</h2>
+                    <p>无法加载游戏文件 bubble-tank.swf</p>
+                    <p style="margin-top:10px;font-size:0.9em;opacity:0.75;">${e.message || ''}</p>
+                    <button onclick="window.location.reload()"
+                        style="margin-top:22px;padding:10px 22px;background:#ff6600;border:none;border-radius:6px;color:white;cursor:pointer;">
+                        重新加载
+                    </button>
+                </div>
+            `;
+        });
+    });
+</script>
